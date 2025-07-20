@@ -11,6 +11,7 @@ import java.util.List;
 public class RoleCreationDTO implements Serializable {
     @NotBlank(message = "Role title is required")
     private String role;
+    private String reportsTo;
     private List<PermissionDTO> permissions;
 
     public RoleCreationDTO() {
@@ -18,13 +19,21 @@ public class RoleCreationDTO implements Serializable {
 
     public RolePermission toEntity() {
         return new RolePermission()
-                .setRole(role);
+                .setRole(role)
+                .setReportsTo(reportsTo);
     }
 
     public @NotBlank(message = "Role title is required") String getRole() {return role;}
 
     public RoleCreationDTO setRole(@NotBlank(message = "Role title is required") String role) {
         this.role = role;
+        return this;
+    }
+
+    public String getReportsTo() {return reportsTo;}
+
+    public RoleCreationDTO setReportTo(String reportsTo) {
+        this.reportsTo = reportsTo;
         return this;
     }
 

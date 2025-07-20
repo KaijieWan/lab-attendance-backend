@@ -58,6 +58,7 @@ public class RolePermissionController {
 
         for(PermissionDTO permission : permissions) {
             RolePermission createdRolePermission = rolePermissionService.createRolePermission(new RolePermission().setRole(roleCreationDTO.getRole())
+                            .setReportsTo(roleCreationDTO.getReportsTo())
                     .setPermissionType(permission.getPermissionType())
                     .setActions(permission.getActions()));
 
@@ -79,6 +80,7 @@ public class RolePermissionController {
 
         for(PermissionDTO permission : permissions) {
             ExecutionStatus status = rolePermissionService.updateRolePermission(new RolePermission().setRole(roleCreationDTO.getRole())
+                            .setReportsTo(roleCreationDTO.getReportsTo())
                     .setPermissionType(permission.getPermissionType())
                     .setActions(permission.getActions()));
 

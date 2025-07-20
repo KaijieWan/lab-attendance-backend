@@ -1,5 +1,6 @@
 package com.example.lab_attendance_app.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ public class Module {
     private String ModuleCode;
 
     @OneToMany(mappedBy = "module")
+    @JsonIgnore
     Set<ClassGroup> classGroups;
 
-    //public Module setModuleCode(String moduleCode) {this.ModuleCode = moduleCode;return this;}
 }

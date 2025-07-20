@@ -104,6 +104,8 @@ public class UserServiceImpl implements UserService {
             return userNotFoundLog(userId);
         }
 
+        logger.info("Modules assigned: {}", user.getModulesAssigned());
+
         user.setId(userId);
         userRepository.save(user);
         logger.debug("User {} details has been updated.", userId);

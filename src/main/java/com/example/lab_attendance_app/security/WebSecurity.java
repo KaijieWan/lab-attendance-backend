@@ -50,9 +50,9 @@ public class WebSecurity {
 				authorizeRequests
 					.requestMatchers("/public/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
-						.requestMatchers("/api/v1/users").permitAll()// Permit auth endpoints
-						.requestMatchers("/api/**").authenticated()
-					.anyRequest().	denyAll() // Temporarily allow all requests
+						.requestMatchers("/api/v1/users/**").permitAll()// Permit auth endpoints
+						.requestMatchers("/api/v1/**").authenticated()
+					.anyRequest().denyAll() // Temporarily allow all requests
 			)
 				.authenticationProvider(authenticationProvider)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

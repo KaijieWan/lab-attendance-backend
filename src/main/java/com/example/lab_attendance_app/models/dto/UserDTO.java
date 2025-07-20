@@ -20,11 +20,13 @@ public class UserDTO implements Serializable {
     private String role;
     private Instant lastLogin;
     private Instant createdAt;
+    private String modulesAssigned;
 
     public UserDTO() {
     }
 
-    public UserDTO(Integer id, String username, String name, String email, String role, Instant lastLogin, Instant createdAt) {
+    public UserDTO(Integer id, String username, String name, String email, String role,
+                   Instant lastLogin, Instant createdAt, String modulesAssigned) {
         this.id = id;
         this.username = username;
         this.name = name;
@@ -32,6 +34,7 @@ public class UserDTO implements Serializable {
         this.role = role;
         this.lastLogin = lastLogin;
         this.createdAt = createdAt;
+        this.modulesAssigned = modulesAssigned;
     }
 
     public User toEntity() {
@@ -108,6 +111,15 @@ public class UserDTO implements Serializable {
         return this;
     }
 
+    public String getModulesAssigned() {
+        return modulesAssigned;
+    }
+
+    public UserDTO setModulesAssigned(String modulesAssigned) {
+        this.modulesAssigned = modulesAssigned;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -118,7 +130,8 @@ public class UserDTO implements Serializable {
                 Objects.equals(this.email, entity.email) &&
                 Objects.equals(this.role, entity.role) &&
                 Objects.equals(this.lastLogin, entity.lastLogin) &&
-                Objects.equals(this.createdAt, entity.createdAt);
+                Objects.equals(this.createdAt, entity.createdAt) &&
+                Objects.equals(this.modulesAssigned, entity.modulesAssigned);
     }
 
     @Override

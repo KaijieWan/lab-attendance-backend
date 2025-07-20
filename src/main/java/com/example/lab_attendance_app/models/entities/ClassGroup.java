@@ -2,6 +2,7 @@ package com.example.lab_attendance_app.models.entities;
 
 import com.example.lab_attendance_app.models.entities.embedded.ClassGroupId;
 import com.example.lab_attendance_app.models.entities.Module;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,5 +29,6 @@ public class ClassGroup {
     private Module module;
 
     @OneToMany(mappedBy = "classGroup")
+    @JsonIgnore
     Set<Student_Enrolled_ClassGroup> studentEnrolledClassGroups;
 }

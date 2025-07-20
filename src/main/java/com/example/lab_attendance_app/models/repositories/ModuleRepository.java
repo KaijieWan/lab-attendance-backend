@@ -9,4 +9,7 @@ import java.util.List;
 public interface ModuleRepository extends JpaRepository<Module, String> {
     @Query("SELECT r.ModuleCode FROM Module r ORDER BY r.ModuleCode")
     List<String> findModuleCodes();
+
+    @Query("SELECT m FROM Module m LEFT JOIN FETCH m.classGroups")
+    List<Module> findAllWithClassGroups();
 }

@@ -1,15 +1,11 @@
 package com.example.lab_attendance_app.services.implementations;
 
-import com.example.lab_attendance_app.enums.ExecutionStatus;
-import com.example.lab_attendance_app.models.entities.ClassGroup;
 import com.example.lab_attendance_app.models.entities.Student;
 import com.example.lab_attendance_app.models.repositories.ModuleRepository;
 import com.example.lab_attendance_app.models.repositories.StudentRepository;
 import com.example.lab_attendance_app.services.StudentService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,7 +25,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     public Student createStudent(Student student){
-        Optional<Student> existingStudent = studentRepository.findById(student.getStudentID());
+        Optional<Student> existingStudent = studentRepository.findById(student.getStudent_ID());
 
         if (existingStudent.isPresent()) {
             return null;

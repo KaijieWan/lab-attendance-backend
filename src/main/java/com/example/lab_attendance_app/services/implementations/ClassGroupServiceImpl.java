@@ -3,6 +3,7 @@ package com.example.lab_attendance_app.services.implementations;
 import com.example.lab_attendance_app.enums.ExecutionStatus;
 import com.example.lab_attendance_app.models.entities.ClassGroup;
 import com.example.lab_attendance_app.models.entities.Module;
+import com.example.lab_attendance_app.models.entities.embedded.ClassGroupId;
 import com.example.lab_attendance_app.models.repositories.ClassGroupRepository;
 import com.example.lab_attendance_app.models.repositories.ModuleRepository;
 import com.example.lab_attendance_app.services.ClassGroupService;
@@ -29,6 +30,10 @@ public class ClassGroupServiceImpl implements ClassGroupService {
 
     public List<ClassGroup> getAllClassGroups(){
         return classGroupRepository.findAll();
+    }
+
+    public List<ClassGroup> getClassGroupsByModuleAndSemester(String moduleCode, String semesterId){
+        return classGroupRepository.findByModuleCodeAndSemesterId(moduleCode, semesterId);
     }
 
     public ExecutionStatus createClassGroup(ClassGroup classGroup) {

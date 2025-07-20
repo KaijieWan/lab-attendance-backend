@@ -1,7 +1,10 @@
 package com.example.lab_attendance_app.models.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,14 +24,18 @@ public class RolePermission {
     @Column(name = "actions")
     private String actions; // Comma-separated actions
 
+    @Column(columnDefinition = "String[]", name = "reports_to")
+    private String reportsTo;
+
     public RolePermission() {
     }
 
-    public RolePermission(UUID role_id, String role, String permissionType, String actions) {
+    public RolePermission(UUID role_id, String role, String permissionType, String actions, String reportsTo) {
         this.role = role;
         this.permissionType = permissionType;
         this.actions = actions;
         this.role_id = role_id;
+        this.reportsTo = reportsTo;
     }
 
     public UUID getId() {
@@ -63,6 +70,15 @@ public class RolePermission {
 
     public RolePermission setActions(String actions) {
         this.actions = actions;
+        return this;
+    }
+
+    public String getReportsTo() {
+        return reportsTo;
+    }
+
+    public RolePermission setReportsTo(String reportsTo) {
+        this.reportsTo = reportsTo;
         return this;
     }
 }

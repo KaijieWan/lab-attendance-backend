@@ -9,4 +9,5 @@ public interface ClassGroupService {
 
     public List<ClassGroup> getAllClassGroups();
     public ExecutionStatus createClassGroup(ClassGroup classGroup);
+    public List<ClassGroup> getClassGroupsByModuleAndSemester(String moduleCode, String semesterId);
 }

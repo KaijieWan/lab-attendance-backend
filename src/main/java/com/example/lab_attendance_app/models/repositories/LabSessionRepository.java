@@ -32,7 +32,7 @@ public interface LabSessionRepository extends JpaRepository<LabSession, String> 
     List<Object[]> findLabSessionsByLabNameRoomAndSemesterWithStudentCount(
             @Param("labName") String labName,
             @Param("room") int room,
-            @Param("semesterID") String semesterID
+                @Param("semesterID") String semesterID
     );
 
     @Query("SELECT ls FROM LabSession ls WHERE ls.Date BETWEEN :startDate AND :endDate AND ls.classGroupID.moduleCode = :moduleCode ORDER BY ls.Date ASC, ls.StartTime ASC, ls.labID.labName ASC, ls.labID.room ASC")

@@ -1,11 +1,12 @@
 package com.example.lab_attendance_app.services.implementations;
 
-import com.ntu.labattendance.model.Absent_Details;
-import com.ntu.labattendance.model.Absent_Logs;
-import com.ntu.labattendance.model.Attendance;
-import com.ntu.labattendance.repository.AbsentDetailsRepository;
-import com.ntu.labattendance.repository.AbsentLogsRepository;
-import com.ntu.labattendance.repository.AttendanceRepository;
+import com.example.lab_attendance_app.models.entities.Absent_Details;
+import com.example.lab_attendance_app.models.entities.Absent_Logs;
+import com.example.lab_attendance_app.models.entities.Attendance;
+import com.example.lab_attendance_app.models.repositories.AbsentDetailsRepository;
+import com.example.lab_attendance_app.models.repositories.AbsentLogsRepository;
+import com.example.lab_attendance_app.models.repositories.AttendanceRepository;
+import com.example.lab_attendance_app.services.EmailService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -28,10 +29,10 @@ public class AbsentServiceImpl {
 
     private static String frontend_ip;
 
-    @Value("${FRONTEND_IP}")
+    /*@Value("${FRONTEND_IP}")
     public void setFrontend_ip(String frontend_ip) {
         AbsentService.frontend_ip = frontend_ip;
-    }
+    }*/
 
     public AbsentServiceImpl(AttendanceRepository attendanceRepository,
                              AbsentDetailsRepository absentDetailsRepository, AbsentLogsRepository absentLogsRepository,
@@ -96,12 +97,12 @@ public class AbsentServiceImpl {
                 // emailService.sendAbsenceEmail(attendance.getStudent().getStudent_ID(), oneTimeLink);
 
                 // TODO: comment this code which sends to myself for testing purposes only.
-                String oneTimeLink = generateOneTimeLink(absentDetails.getAbsent_ID());
-                System.out.println("One-time link: " + oneTimeLink);
-                emailService.sendAbsenceEmail("zsoh007", oneTimeLink, java.sql.Date.valueOf(attendance.getLabsession().getDate()), attendance.getLabsession().getStartTime(), attendance.getLabsession().getEndTime(), attendance.getStudent().getFullName(), attendance.getLabsession().getClassGroup().getClassGroupId().getModuleCode(), attendance.getLabsession().getClassGroupID().getClassGroupID(), attendance.getLabsession().getLabID().getLabName());
+                //String oneTimeLink = generateOneTimeLink(absentDetails.getAbsent_ID());
+                //System.out.println("One-time link: " + oneTimeLink);
+                //emailService.sendAbsenceEmail("zsoh007", oneTimeLink, java.sql.Date.valueOf(attendance.getLabsession().getDate()), attendance.getLabsession().getStartTime(), attendance.getLabsession().getEndTime(), attendance.getStudent().getFullName(), attendance.getLabsession().getClassGroup().getClassGroupId().getModuleCode(), attendance.getLabsession().getClassGroupID().getClassGroupID(), attendance.getLabsession().getLabID().getLabName());
 
-                Absent_Logs absentLog2 = new Absent_Logs(absentDetails.getAbsent_ID(), "System", "Automated email is sent to student with one time link to submit absence justification. \n\n<b>Link:</b> " + oneTimeLink, "System Generated");
-                absentLogsRepository.save(absentLog2);
+                //Absent_Logs absentLog2 = new Absent_Logs(absentDetails.getAbsent_ID(), "System", "Automated email is sent to student with one time link to submit absence justification. \n\n<b>Link:</b> " + oneTimeLink, "System Generated");
+                //absentLogsRepository.save(absentLog2);
 
                 // Add a delay between email sends
                 Thread.sleep(1000);  // 1 seconds delay between emails
@@ -118,7 +119,7 @@ public class AbsentServiceImpl {
 //        absentLogsRepository.save(absentLog);
     }
 
-    @Async
+    /*@Async
     @Transactional
     public void processAbsencesForDemoPurposes() throws MessagingException, InterruptedException {
         LocalDate currentDate = LocalDate.now();
@@ -182,7 +183,7 @@ public class AbsentServiceImpl {
                 // Add a delay between email sends
                 Thread.sleep(1000);  // 1 seconds delay between emails
             }
-        }
+        }*/
 
 
         // Testing generating oneTimeLink and sending it to my own email at zsoh007
@@ -192,10 +193,10 @@ public class AbsentServiceImpl {
 
 //        Absent_Logs absentLog = new Absent_Logs(UUID.fromString("6907b84c-fd67-4ea5-8fe8-70b1cb0089e7"), "System", "Automated email is sent to student with one time link to submit absence justification. \n\n<b>Link:</b> " + oneTimeLink, "System Generated");
 //        absentLogsRepository.save(absentLog);
-    }
+//    }
 
-    public static String generateOneTimeLink(UUID absentID) {
+    /*public static String generateOneTimeLink(UUID absentID) {
         // Generate and return the one-time link
         return frontend_ip + "/absences/view/" + absentID.toString();
-    }
+    }*/
 }

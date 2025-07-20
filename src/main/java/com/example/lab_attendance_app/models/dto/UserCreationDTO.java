@@ -13,6 +13,7 @@ public class UserCreationDTO implements Serializable {
     private String name;
     private String email;
     private String role;
+    private String modulesAssigned;
     private Instant lastLogin = Instant.now();
     private Instant createdAt = Instant.now();
 
@@ -38,7 +39,8 @@ public class UserCreationDTO implements Serializable {
                 .setLocked(isLocked)
                 .setEnabled(isEnabled)
                 .setExpired(isExpired)
-                .setCredentialsExpired(isCredentialsExpired);
+                .setCredentialsExpired(isCredentialsExpired)
+                .setModulesAssigned(modulesAssigned);
     }
 
     public @NotBlank(message = "Username is required") String getUsername() {
@@ -137,6 +139,15 @@ public class UserCreationDTO implements Serializable {
 
     public UserCreationDTO setCredentialsExpired(boolean credentialsExpired) {
         isCredentialsExpired = credentialsExpired;
+        return this;
+    }
+
+    public String getModulesAssigned() {
+        return modulesAssigned;
+    }
+
+    public UserCreationDTO setModulesAssigned(String modulesAssigned) {
+        this.modulesAssigned = modulesAssigned;
         return this;
     }
 }

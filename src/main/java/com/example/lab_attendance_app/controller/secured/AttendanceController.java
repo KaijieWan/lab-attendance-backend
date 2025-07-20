@@ -1,8 +1,7 @@
 package com.example.lab_attendance_app.controller.secured;
 
 import com.example.lab_attendance_app.enums.ExecutionStatus;
-import com.example.lab_attendance_app.models.dto.CreateAttendanceDTO;
-import com.example.lab_attendance_app.models.dto.MessageResponse;
+import com.example.lab_attendance_app.models.dto.*;
 import com.example.lab_attendance_app.models.entities.*;
 import com.example.lab_attendance_app.models.entities.embedded.ClassGroupId;
 import com.example.lab_attendance_app.models.entities.embedded.LabId;
@@ -126,11 +125,23 @@ public class AttendanceController {
      * @param semesterId The ID of the semester.
      * @return ResponseEntity containing a list of attendance records for the specified module and semester.
      */
-    /*@GetMapping("/getAttendanceByModuleAndSemesterGroupByClassGroupAndDate")
-    public ResponseEntity<List<Attendance>> getAttendanceByModuleAndSemesterGroupByClassGroupAndDate(@RequestParam String moduleCode, @RequestParam String semesterId) {
-        List<Attendance> attendances = attendanceRepository.findAttendanceByModuleAndSemesterGroupByClassGroupAndDate(moduleCode, semesterId);
-        return ResponseEntity.ok(attendances);
-    }*/
+    @GetMapping("/getAttendanceByModuleAndSemesterGroupByClassGroupAndDate")
+    public ResponseEntity<?> getAttendanceByModuleAndSemesterGroupByClassGroupAndDate(@RequestParam String moduleCode, @RequestParam String semesterId) {
+        List<Attendance> attendances = attendanceService.getAttendanceByModuleAndSemesterGroupByClassGroupAndDate(moduleCode, semesterId);
+
+        if (attendances.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new MessageResponse(
+                            "No attendances with the module and semester found in database",
+                            ExecutionStatus.NOT_FOUND
+                    )
+            );
+        }
+        // Success
+        return ResponseEntity.ok(
+                attendances
+        );
+    }
 
     /**
      * Retrieves all attendance records for a specific lab session.
@@ -139,37 +150,46 @@ public class AttendanceController {
      * @return ResponseEntity containing a list of attendance records for the lab session,
      * or a 404 status if no records are found.
      */
-    /*@GetMapping("/getAttendanceByLabSessionId")
-    public ResponseEntity<List<Attendance>> getAllAttendancesByLabSessionId(@RequestParam String labSessionId) {
-        List<Attendance> attendances = attendanceRepository.findAllByLabSessionId(labSessionId);
+    @GetMapping("/getAttendanceByLabSessionId")
+    public ResponseEntity<?> getAllAttendancesByLabSessionId(@RequestParam String labSessionId) {
+        List<Attendance> attendances = attendanceService.getAllAttendancesByLabSessionId(labSessionId);
         if (attendances.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } else {
-            return ResponseEntity.ok(attendances);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new MessageResponse(
+                            "No attendances with the labSessionId found in database",
+                            ExecutionStatus.NOT_FOUND
+                    )
+            );
         }
-    }*/
+        // Success
+        return ResponseEntity.ok(
+                attendances
+        );
+    }
 
     /**
      * Updates the remarks of a specific attendance record.
      *
-     * @param updateRemarksRequest The details of the attendance record and the new remarks.
+     * @param updateRemarksDTO The details of the attendance record and the new remarks.
      * @return ResponseEntity with a success message if the remarks are updated,
      * or a 404 status if the attendance record is not found.
      */
-    /*@PutMapping("/updateRemarks")
-    public ResponseEntity<Map<String, String>> updateRemarks(@RequestBody UpdateRemarksRequest updateRemarksRequest) {
-        Optional<Attendance> existingAttendance = attendanceRepository.findById(Integer.parseInt(updateRemarksRequest.getAttendanceID()));
-
-        if (existingAttendance.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Attendance ID not found, unable to update remarks"));
+    @PutMapping("/updateRemarks")
+    public ResponseEntity<MessageResponse> updateRemarks(@RequestBody UpdateRemarksDTO updateRemarksDTO) {
+        switch(attendanceService.updateAttendanceRemarks(updateRemarksDTO)){
+            case SUCCESS -> {
+                return ResponseEntity.ok
+                        (new MessageResponse
+                                ("Remarks updated successfully"
+                                        , ExecutionStatus.SUCCESS));
+            }
+            case NOT_FOUND -> {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(
+                        "Attendance ID not found, unable to update remarks", ExecutionStatus.NOT_FOUND));
+            }
+            default -> {return null;}
         }
-
-        Attendance attendance = existingAttendance.get();
-        attendance.setRemarks(updateRemarksRequest.getNewRemarks());
-        attendanceRepository.save(attendance);
-
-        return ResponseEntity.ok(Map.of("message", "Remarks updated successfully"));
-    }*/
+    }
 
     /**
      * Retrieves all attendance records for a student in a specific semester.
@@ -370,7 +390,7 @@ public class AttendanceController {
         attendanceRepository.delete(makeUpAttendance);
 
         // I need to also remove the current make up lab session if there are no students enrolled in it
-        List<Attendance> makeUpAttendances = attendanceRepository.findAllByLabSessionId(currentMakeUpLabSession.getLabSessionID());
+        List<Attendance> makeUpAttendances = attendanceRepository.findAllByLabSessionId(currentMakeUpLabSession.getAdhocSessionID());
         if (makeUpAttendances.isEmpty()) {
             labSessionRepository.delete(currentMakeUpLabSession);
         }
@@ -387,7 +407,7 @@ public class AttendanceController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Lab not found, please input a valid lab and lab room unable to reschedule make up session"));
             }
 
-            newMakeUpLabSession = LabSession.builder().LabSessionID(rescheduleMakeUpRequest.getNewMakeUpLabSessionID()).classGroupID(currentMakeUpLabSession.getClassGroupID()).Date(rescheduleMakeUpRequest.getLabDate()).StartTime(rescheduleMakeUpRequest.getLabStartTime()).EndTime(rescheduleMakeUpRequest.getLabEndTime()).isMakeUpLabSession(true).labID(labId).build();
+            newMakeUpLabSession = LabSession.builder().AdhocSessionID(rescheduleMakeUpRequest.getNewMakeUpLabSessionID()).classGroupID(currentMakeUpLabSession.getClassGroupID()).Date(rescheduleMakeUpRequest.getLabDate()).StartTime(rescheduleMakeUpRequest.getLabStartTime()).EndTime(rescheduleMakeUpRequest.getLabEndTime()).isMakeUpLabSession(true).labID(labId).build();
 
             labSessionRepository.save(newMakeUpLabSession);
         } else {
@@ -395,7 +415,7 @@ public class AttendanceController {
         }
 
         // Create a new attendance record for the new make up lab session
-        Attendance newMakeUpAttendance = Attendance.builder().Lab_SessionID(newMakeUpLabSession.getLabSessionID()).Student_ID(makeUpAttendance.getStudent_ID()).Status("Pending").isMakeUpSession(true).Semester_ID(makeUpAttendance.getSemester_ID()).Remarks("").build();
+        Attendance newMakeUpAttendance = Attendance.builder().Lab_SessionID(newMakeUpLabSession.getAdhocSessionID()).Student_ID(makeUpAttendance.getStudent_ID()).Status("Pending").isMakeUpSession(true).Semester_ID(makeUpAttendance.getSemester_ID()).Remarks("").build();
         attendanceRepository.save(newMakeUpAttendance);
 
         // Update the absent details to point to the new make up attendance record
@@ -578,7 +598,7 @@ public class AttendanceController {
                 // Check whether the lab session is already created
                 Optional<LabSession> newLabSessionOptional = labSessionRepository.findById(approveAbsentRequest.getNewLabSessionID());
                 if (newLabSessionOptional.isEmpty()) {
-                    newLabSession = LabSession.builder().LabSessionID(approveAbsentRequest.getNewLabSessionID()).classGroupID(classGroupId).Date(approveAbsentRequest.getLabDate()).StartTime(approveAbsentRequest.getLabStartTime()).EndTime(approveAbsentRequest.getLabEndTime()).isMakeUpLabSession(true).labID(labId).build();
+                    newLabSession = LabSession.builder().AdhocSessionID(approveAbsentRequest.getNewLabSessionID()).classGroupID(classGroupId).Date(approveAbsentRequest.getLabDate()).StartTime(approveAbsentRequest.getLabStartTime()).EndTime(approveAbsentRequest.getLabEndTime()).isMakeUpLabSession(true).labID(labId).build();
 
                     labSessionRepository.save(newLabSession);
                 } else {
@@ -591,7 +611,7 @@ public class AttendanceController {
                 LabSession currLabSession = optionalLabSession.get();
                 Optional<LabSession> newLabSessionOptional = labSessionRepository.findById(approveAbsentRequest.getNewLabSessionID());
                 if (newLabSessionOptional.isEmpty()) {
-                    newLabSession = LabSession.builder().LabSessionID(approveAbsentRequest.getNewLabSessionID()).classGroupID(classGroupId).Date(currLabSession.getDate()).StartTime(currLabSession.getStartTime()).EndTime(currLabSession.getEndTime()).labID(currLabSession.getLabID()).isMakeUpLabSession(true).build();
+                    newLabSession = LabSession.builder().AdhocSessionID(approveAbsentRequest.getNewLabSessionID()).classGroupID(classGroupId).Date(currLabSession.getDate()).StartTime(currLabSession.getStartTime()).EndTime(currLabSession.getEndTime()).labID(currLabSession.getLabID()).isMakeUpLabSession(true).build();
 
                     labSessionRepository.save(newLabSession);
                 } else {
@@ -601,13 +621,13 @@ public class AttendanceController {
             }
 
             // Check if student is already enrolled in the make up session
-            Optional<Attendance> makeUpAttendanceOptional = attendanceRepository.findAttendanceByLabSessionIdAndSemesterIdAndStudentId(newLabSession.getLabSessionID(), studentID);
+            Optional<Attendance> makeUpAttendanceOptional = attendanceRepository.findAttendanceByLabSessionIdAndSemesterIdAndStudentId(newLabSession.getAdhocSessionID(), studentID);
             if (makeUpAttendanceOptional.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Student is already enrolled in the make up session"));
             }
 
             // Create a new attendance record for the makeup session
-            Attendance makeUpAttendance = Attendance.builder().Lab_SessionID(newLabSession.getLabSessionID()).Student_ID(studentID).Semester_ID(semesterID).Status("Pending").isMakeUpSession(true).build();
+            Attendance makeUpAttendance = Attendance.builder().Lab_SessionID(newLabSession.getAdhocSessionID()).Student_ID(studentID).Semester_ID(semesterID).Status("Pending").isMakeUpSession(true).build();
 
             attendanceRepository.save(makeUpAttendance);
 
@@ -664,7 +684,7 @@ public class AttendanceController {
      * @param request The details of the lab sessions to retrieve.
      * @return A list of attendance records for lab sessions from the current time to the end of the day.
      */
-    /*@PostMapping("/labSessionsToEndOfDay")
+    @PostMapping("/labSessionsToEndOfDay")
     public List<Attendance> getLabSessionsToEndOfDay(@RequestBody GetCurrentLabSessionsRequest request) {
         LocalTime endOfDay = LocalTime.of(23, 59, 59);
         List<Attendance> currentSessions = attendanceRepository.findAttendancesByLabNameAndRoomAndDateAndTimeRange(
@@ -681,86 +701,40 @@ public class AttendanceController {
                 endOfDay
         );
         currentSessions.addAll(upcomingSessions);
+
+        System.out.println("Current sessions found: " + currentSessions.size());
+        System.out.println("Upcoming sessions found: " + upcomingSessions.size());
+
         return currentSessions;
-    }*/
+    }
 
     /**
      * Mark or Change Attendance (used by both tablet client and admin app)
      *
-     * @param request The details of the attendance to be marked or changed.
+     * @param markAttendanceDTO The details of the attendance to be marked or changed.
      * @return ResponseEntity with a success message if the attendance is marked successfully,
      * or a 404 status if the attendance record is not found.
      */
-    /*@PutMapping("/markAttendance")
-    public ResponseEntity<Map<String, String>> markAttendance(@RequestBody MarkAttendanceRequest request) {
+    @PutMapping("/markAttendance")
+    public ResponseEntity<MessageResponse> markAttendance(@RequestBody MarkAttendanceDTO markAttendanceDTO) {
+        System.out.println("Received mark attendance request: " + markAttendanceDTO);
 
-        System.out.println("received mark attendance request: " + request);
-
-        Optional<Attendance> attendanceOptional = attendanceRepository.findById(request.getAttendanceID());
-
-        if (attendanceOptional.isPresent()) {
-            // Check whether if the attendance have an absent record -> this implies it was previously marked absent
-            // Should override absence record as approved if an admin manually marks the attendance as present.
-            if (attendanceOptional.get().getAbsentDetails() != null && (Objects.equals(request.getStatus(), "Present") || Objects.equals(request.getStatus(), "Excused"))) {
-                Absent_Details absentDetails = attendanceOptional.get().getAbsentDetails();
-
-                // Check if there is an approver and mark the absent as approved
-                if (request.getApproverUsername() != null) {
-                    Optional<User> userOptional = userRepository.findByUsername(request.getApproverUsername());
-                    if (userOptional.isPresent() && !Objects.equals(absentDetails.getStatus(), "Approved")) {
-                        // Mark absent as approved
-                        absentDetails.setStatus("Approved");
-                        absentDetailsRepository.save(absentDetails);
-
-                        // Create a new absent log for the approval
-                        Absent_Logs absentLog = new Absent_Logs(absentDetails.getAbsent_ID(), userOptional.get().getName(), "Attendance was marked present manually, hence absence record is no longer required. \n\nStatus updated to [Approved]", "Action By Staff");
-                        absentLogsRepository.save(absentLog);
-                    }
-                }
-            } else if (attendanceOptional.get().getAbsentDetails() == null && (Objects.equals(request.getStatus(), "Present") || Objects.equals(request.getStatus(), "Excused"))) {
-                // If there is no absent record, there are two scenarios
-                // One is this is a normal lab session, another is this is a make up session
-                // If it is a make up session, we need to update the absent record to "Approved" after make up attended
-                // and also mark the original attendance as "Excused"
-                // If it is a normal lab session, we just need to mark the attendance as present
-                if (attendanceOptional.get().getIsMakeUpSession()) {
-                    // This is a make up session
-                    // Retrieve the absent record
-                    Absent_Details absentDetails = absentDetailsRepository.getAbsentDetailsByMakeUpAttendanceID(attendanceOptional.get().getAttendance_ID()).get();
-                    absentDetails.setStatus("Approved");
-                    absentDetailsRepository.save(absentDetails);
-
-                    // Check if there is an approver and log the approval as accordingly
-                    if (request.getApproverUsername() != null) {
-                        Optional<User> userOptional = userRepository.findByUsername(request.getApproverUsername());
-                        if (userOptional.isPresent() && !Objects.equals(absentDetails.getStatus(), "Approved")) {
-                            // Create a new absent log for the approval
-                            Absent_Logs absentLog = new Absent_Logs(absentDetails.getAbsent_ID(), userOptional.get().getName(), "Make Up Session Attendance was marked present/excused manually. \n\nStatus updated to [Approved]", "Action By Staff");
-                            absentLogsRepository.save(absentLog);
-                        }
-                    } else {
-                        if (!Objects.equals(absentDetails.getStatus(), "Approved")) {
-                            // Create a new absent log for the approval
-                            Absent_Logs absentLog = new Absent_Logs(absentDetails.getAbsent_ID(), "System", "Student attended make up session. \n\nStatus updated to [Approved]", "System Generated");
-                            absentLogsRepository.save(absentLog);
-                        }
-                    }
-
-                    // Retrieve original attendance record and mark it as "Excused"
-                    Attendance originalAttendance = attendanceRepository.findAbsentByAbsentID(absentDetails.getAbsent_ID()).get();
-                    originalAttendance.setStatus("Excused");
-                    attendanceRepository.save(originalAttendance);
-                }
+        switch(attendanceService.markAttendance(markAttendanceDTO)){
+            case SUCCESS -> {
+                Optional<Attendance> attendanceOptional = attendanceRepository.findById(markAttendanceDTO.getAttendanceID());
+                Attendance attendance = attendanceOptional.get();
+                return ResponseEntity.ok
+                        (new MessageResponse
+                                ("\"Attendance marked successfully, from \" + attendance.getStatus() + \" to \" + markAttendanceDTO.getStatus())"
+                                        , ExecutionStatus.SUCCESS));
             }
-
-            Attendance attendance = attendanceOptional.get();
-            attendance.setStatus(request.getStatus());
-            attendanceRepository.save(attendance);
-            return ResponseEntity.ok(Map.of("message", "Attendance marked successfully, from " + attendance.getStatus() + " to " + request.getStatus()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Attendance record not found"));
+            case NOT_FOUND -> {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(
+                        "Attendance record not found", ExecutionStatus.NOT_FOUND));
+            }
+            default -> {return null;}
         }
-    }*/
+    }
 
     /**
      * Checks if a lab room is full for a specific date and time range, considering the number of students to be added.

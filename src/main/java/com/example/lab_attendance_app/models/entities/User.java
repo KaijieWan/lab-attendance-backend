@@ -53,10 +53,14 @@ public class User implements UserDetails {
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @Column(name = "modules_assigned")
+    private String modulesAssigned;
+
     public User() {
     }
 
-    public User(Integer id, String username, String name, String password, String email, String role, Instant lastLogin, Instant createdAt) {
+    public User(Integer id, String username, String name, String password, String email, String role,
+                Instant lastLogin, Instant createdAt, String modulesAssigned) {
         this.id = id;
         this.username = username;
         this.name = name;
@@ -65,6 +69,7 @@ public class User implements UserDetails {
         this.role = role;
         this.lastLogin = lastLogin;
         this.createdAt = createdAt;
+        this.modulesAssigned = modulesAssigned;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class User implements UserDetails {
     }
 
     public UserDTO toDTO() {
-        return new UserDTO(id, username, name, email, role, lastLogin, createdAt);
+        return new UserDTO(id, username, name, email, role, lastLogin, createdAt, modulesAssigned);
     }
 
     public Integer getId() {
@@ -205,6 +210,15 @@ public class User implements UserDetails {
 
     public User setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+        return this;
+    }
+
+    public String getModulesAssigned() {
+        return modulesAssigned;
+    }
+
+    public User setModulesAssigned(String modulesAssigned) {
+        this.modulesAssigned = modulesAssigned;
         return this;
     }
 }

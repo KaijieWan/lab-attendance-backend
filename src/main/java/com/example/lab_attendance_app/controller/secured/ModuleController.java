@@ -3,6 +3,7 @@ package com.example.lab_attendance_app.controller.secured;
 import com.example.lab_attendance_app.enums.ExecutionStatus;
 import com.example.lab_attendance_app.models.dto.MessageResponse;
 import com.example.lab_attendance_app.models.dto.ModuleCreationDTO;
+import com.example.lab_attendance_app.models.dto.ModuleResponseDTO;
 import com.example.lab_attendance_app.models.entities.Module;
 import com.example.lab_attendance_app.models.repositories.LabSessionRepository;
 import com.example.lab_attendance_app.models.repositories.ModuleRepository;

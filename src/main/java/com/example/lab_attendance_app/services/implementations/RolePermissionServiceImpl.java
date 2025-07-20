@@ -69,8 +69,10 @@ public class RolePermissionServiceImpl implements RolePermissionService {
 
         if(existingRolePermission != null){
             existingRolePermission.setActions(rolePermission.getActions());
+            existingRolePermission.setReportsTo(rolePermission.getReportsTo());
             rolePermissionRepository.save(existingRolePermission);
             logger.debug("RolePermission {} permission actions has been updated.", existingRolePermission.getId());
+            logger.debug("RolePermission {} reporting to has been updated.", existingRolePermission.getId());
             return ExecutionStatus.SUCCESS;
         }else if(existingRolePermission == null){
             rolePermissionRepository.save(rolePermission);

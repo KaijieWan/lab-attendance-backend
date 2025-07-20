@@ -1,6 +1,6 @@
 package com.example.lab_attendance_app.services;
 
-public interface EmailService {
+public interface    EmailService {
     /**
      * Create a new user with the given user object.
      *

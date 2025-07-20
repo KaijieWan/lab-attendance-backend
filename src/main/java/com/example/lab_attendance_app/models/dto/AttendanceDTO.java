@@ -34,7 +34,7 @@ public class AttendanceDTO implements Serializable {
         this.timeOut = timeOut;
     }
 
-    public Attendance toEntity() {
+    /*public Attendance toEntity() {
         return new Attendance()
                 .setId(id)
                 .setStudent(student.toEntity())
@@ -42,7 +42,7 @@ public class AttendanceDTO implements Serializable {
                 .setDate(date)
                 .setTime(time)
                 .setTimeOut(timeOut);
-    }
+    }*/
 
     public Integer getId() {
         return id;

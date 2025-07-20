@@ -257,6 +257,20 @@ public class LabSessionController {
         }
     }
 
+    @GetMapping("/specificLabSessions")
+    public ResponseEntity<?> getSpecificLabSessions(@RequestParam String classGroupId, @RequestParam String moduleCode, @RequestParam String semesterId) {
+        List<LabSession> labSessions = labSessionService.getSpecificLabSessions(classGroupId, moduleCode, semesterId);
+
+        if (labSessions.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new MessageResponse(
+                    "No lab sessions with the particular parameters found in database",
+                    ExecutionStatus.NOT_FOUND
+            ));
+        } else {
+            return ResponseEntity.ok(labSessions);
+        }
+    }
+
     /**
      * Updates the capacity of a specific lab.
      *

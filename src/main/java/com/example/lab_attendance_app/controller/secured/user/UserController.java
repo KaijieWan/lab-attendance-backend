@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -79,6 +81,19 @@ public class UserController {
     public ResponseEntity<MessageResponse> updateUser(@PathVariable Integer id, @RequestBody UserCreationDTO userCreationDTO) {
         logger.info("Updating user with ID: {}", id);
         User user = userService.getUser(id);
+        if(Objects.equals(userCreationDTO.getModulesAssigned(), "")){
+            userCreationDTO.setModulesAssigned(user.getModulesAssigned());
+        }
+        if(Objects.equals(userCreationDTO.getEmail(), "")){
+            userCreationDTO.setEmail(user.getEmail());
+        }
+        if(Objects.equals(userCreationDTO.getName(), "")){
+            userCreationDTO.setName(user.getName());
+        }
+        if(Objects.equals(userCreationDTO.getUsername(), "")){
+            userCreationDTO.setUsername(user.getUsername());
+        }
+
         userCreationDTO.setPassword(user.getPassword());
         userCreationDTO.setCreatedAt(user.getCreatedAt());
         userCreationDTO.setLastLogin(user.getLastLogin());

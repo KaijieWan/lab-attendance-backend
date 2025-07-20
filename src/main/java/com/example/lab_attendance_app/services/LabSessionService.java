@@ -20,5 +20,6 @@ public interface LabSessionService {
     public List<Object[]> getLabSchedules(String lab, int room, String semester);
     public List<LabSessionWithRemainingCapacityDTO> getLabSessionsByDateRangeAndModuleCode(MakeUpLabSessionDTO makeUpLabSessionDTO);
     public List<Lab> getAllLabs();
+    public List<LabSession> getSpecificLabSessions(String classGroupId, String moduleCode, String semesterId);
     public ExecutionStatus updateLabCapacity(String labName, int room, int newCapacity);
 }

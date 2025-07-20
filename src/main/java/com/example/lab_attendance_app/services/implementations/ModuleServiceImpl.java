@@ -2,13 +2,11 @@ package com.example.lab_attendance_app.services.implementations;
 
 import com.example.lab_attendance_app.models.entities.Module;
 import com.example.lab_attendance_app.models.repositories.ModuleRepository;
-import com.example.lab_attendance_app.models.repositories.RolePermissionRepository;
 import com.example.lab_attendance_app.services.ModuleService;
 import com.example.lab_attendance_app.services.UserService;
+import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +32,7 @@ public class ModuleServiceImpl implements ModuleService {
         return moduleRepository.save(module);
     }
 
+    @Transactional
     public List<Module> getAllModules(){
         return moduleRepository.findAll();
     }

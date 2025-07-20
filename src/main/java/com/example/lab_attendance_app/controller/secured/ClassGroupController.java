@@ -3,13 +3,16 @@ package com.example.lab_attendance_app.controller.secured;
 import com.example.lab_attendance_app.enums.ExecutionStatus;
 import com.example.lab_attendance_app.models.dto.ClassGroupDTO;
 import com.example.lab_attendance_app.models.dto.MessageResponse;
-import com.example.lab_attendance_app.models.entities.ClassGroup;
+import com.example.lab_attendance_app.models.entities.*;
 import com.example.lab_attendance_app.models.entities.Module;
+import com.example.lab_attendance_app.models.entities.embedded.ClassGroupId;
+import com.example.lab_attendance_app.models.entities.embedded.StudentEnrolledClassGroupId;
 import com.example.lab_attendance_app.models.repositories.*;
 import com.example.lab_attendance_app.services.ClassGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +78,31 @@ public class ClassGroupController {
     }
 
     /**
+     * Retrieves a list of all class groups.
+     *
+     * @return A list of all class groups from the repository.
+     */
+    @GetMapping("/specificClassGroups")
+    public ResponseEntity<?> getClassGroupsByModuleAndSemester(@RequestParam String module, @RequestParam String semesterID) {
+        logger.info("Retrieving all ClassGroups according to the module & semester:");
+
+        List<ClassGroup> classGroups = classGroupService.getClassGroupsByModuleAndSemester(module, semesterID);
+
+        if (classGroups.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new MessageResponse(
+                            "No modules in database",
+                            ExecutionStatus.INVALID
+                    )
+            );
+        }
+        // Success
+        return ResponseEntity.ok(
+                classGroups
+        );
+    }
+
+    /**
      * Creates a new class group if it does not already exist and associates it with a module.
      *
      * @param classGroupDTO The class group object to be created.
@@ -122,7 +150,7 @@ public class ClassGroupController {
      * @param semesterId
      * @return ResponseEntity containing a success message if the student is removed from the class group,
      */
-    /*@DeleteMapping("/deleteStudentFromClassGroup")
+    @DeleteMapping("/deleteStudentFromClassGroup")
     @Transactional
     public ResponseEntity<String> deleteStudentFromClassGroup(@RequestParam String studentId, @RequestParam String moduleCode, @RequestParam String classGroupId, @RequestParam String semesterId) {
         // Check if the student exists
@@ -173,9 +201,9 @@ public class ClassGroupController {
         classGroupStudentRepository.deleteByStudentIDAndModuleCodeAndClassGroupIDAndSemesterID(studentId, moduleCode, classGroupId, semesterId);
 
         return ResponseEntity.ok("Student successfully removed from class group");
-    }*/
+    }
 
-    /*@Transactional
+    @Transactional
     @PostMapping("/addStudentToClassGroup")
     public ResponseEntity<String> addStudentToClassGroup(@RequestParam String studentId, @RequestParam String moduleCode, @RequestParam String classGroupId, @RequestParam String semesterId) {
         // Check if the student exists
@@ -246,5 +274,5 @@ public class ClassGroupController {
         }
 
         return ResponseEntity.ok("Student successfully added to class group");
-    }*/
+    }
 }

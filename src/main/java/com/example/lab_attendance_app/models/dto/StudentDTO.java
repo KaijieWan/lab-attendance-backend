@@ -22,7 +22,7 @@ public class StudentDTO implements Serializable {
 
     public Student toEntity() {
         return new Student()
-                .setStudentID(studentID)
+                .setStudent_ID(studentID)
                 .setFullName(fullName);
     }
 

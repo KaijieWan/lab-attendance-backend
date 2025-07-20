@@ -5,6 +5,8 @@ package com.example.lab_attendance_app.services;
 import com.example.lab_attendance_app.enums.AttendanceStatus;
 import com.example.lab_attendance_app.enums.ExecutionStatus;
 import com.example.lab_attendance_app.models.dto.CreateAttendanceDTO;
+import com.example.lab_attendance_app.models.dto.MarkAttendanceDTO;
+import com.example.lab_attendance_app.models.dto.UpdateRemarksDTO;
 import com.example.lab_attendance_app.models.entities.Attendance;
 import com.fasterxml.jackson.core.JsonProcessingException;
 //import com.pshs.attendance_system.models.dto.AttendanceResultDTO;
@@ -22,6 +24,10 @@ public interface AttendanceService {
 
 	public ExecutionStatus createAttendance(CreateAttendanceDTO createAttendanceDTO);
 	public List<Attendance> getAllAttendances();
+	public List<Attendance> getAttendanceByModuleAndSemesterGroupByClassGroupAndDate(String moduleCode, String semesterId);
+	public List<Attendance> getAllAttendancesByLabSessionId(String labSessionId);
+	public ExecutionStatus markAttendance(MarkAttendanceDTO markAttendanceDTO);
+	public ExecutionStatus updateAttendanceRemarks(UpdateRemarksDTO updateRemarksDTO);
 	/**
 	 * Update the attendance record with the student. Requires the attendance id, and a new attendance object with the updated values.
 	 *

@@ -1,11 +1,9 @@
 package com.example.lab_attendance_app.models.entities;
 
-import com.example.lab_attendance_app.models.dto.StudentDTO;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Set;
 
@@ -23,7 +21,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "student", indexes = {
         @Index(name = "idx_studentID", columnList = "Student_ID")
 })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "Student_ID")
 public class Student {
     @Id
     private String Student_ID;
@@ -32,14 +31,15 @@ public class Student {
     private String fullName;
 
     @OneToMany(mappedBy = "student")
+    @JsonIgnore
     Set<Student_Enrolled_ClassGroup> studentEnrolledClassGroupSet;
 
 
-    public String getStudentID() {
+    public String getStudent_ID() {
         return Student_ID;
     }
 
-    public Student setStudentID(String Student_ID) {
+    public Student setStudent_ID(String Student_ID) {
         this.Student_ID = Student_ID;
         return this;
     }
